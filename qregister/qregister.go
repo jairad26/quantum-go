@@ -1,6 +1,10 @@
 package qregister
 
-import "math"
+import (
+	"math"
+	"math/cmplx"
+	"math/rand/v2"
+)
 
 // QRegister represents a quantum register, a collection of qubits.
 type QRegister struct {
@@ -17,6 +21,18 @@ func New(numQubits int) *QRegister {
 		numQubits: numQubits,
 		state:     state,
 	}
+}
+
+// GetState returns a copy of the current quantum state.
+func (qr *QRegister) GetState() []complex128 {
+	stateCopy := make([]complex128, len(qr.state))
+	copy(stateCopy, qr.state)
+	return stateCopy
+}
+
+// GetNumQubits returns  the number of qubits in the quantum register.
+func (qr *QRegister) GetNumQubits() int {
+	return qr.numQubits
 }
 
 // ApplyH applies the Hadamard gate to the qubit at the specified index.
@@ -177,4 +193,51 @@ func (qr *QRegister) CNOT(controlIndex, targetIndex int) {
 	}
 
 	qr.state = newState
+}
+
+// Measure collapses the quantum register into a classical state by measuring each qubit.
+func (qr *QRegister) Measure() []int {
+	// Calculate probabilities for each basis state
+	probs := make([]float64, len(qr.state))
+	for i, amp := range qr.state {
+		probs[i] = real(amp * cmplx.Conj(amp))
+	}
+
+	// Generate random number between 0 and 1
+	r := rand.Float64()
+
+	// Find which state we collapsed to
+	var cumulative float64
+	var outcome int
+	for i, prob := range probs {
+		cumulative += prob
+		if r <= cumulative {
+			outcome = i
+			break
+		}
+	}
+
+	// Convert outcome to binary representation
+	result := make([]int, qr.numQubits)
+	for i := 0; i < qr.numQubits; i++ {
+		result[i] = (outcome >> i) & 1
+	}
+
+	// Collapse state vector
+	newState := make([]complex128, len(qr.state))
+	newState[outcome] = 1
+	qr.state = newState
+
+	return result
+}
+
+func (qr *QRegister) Probabilities() []float64 {
+	probs := make([]float64, len(qr.state))
+
+	for i, amp := range qr.state {
+		// Probability = |amplitude|^2
+		probs[i] = real(amp * cmplx.Conj(amp))
+	}
+
+	return probs
 }
