@@ -35,7 +35,7 @@ func (qr *QRegister) GetNumQubits() int {
 	return qr.numQubits
 }
 
-// ApplyH applies the Hadamard gate to the qubit at the specified index.
+// H applies the Hadamard gate to the qubit at the specified index.
 /*
 Explanation:
 The Hadamard gate is a single-qubit gate that maps the basis states |0⟩ and |1⟩ to superposition states.
@@ -66,7 +66,7 @@ pair = 11 ^ 10 = 01 (decimal 1)
 */
 func (qr *QRegister) H(index int) *QRegister {
 	if index >= qr.numQubits {
-		return qr
+		panic("Index out of range")
 	}
 
 	factor := complex(1.0/math.Sqrt(2), 0)
@@ -81,12 +81,10 @@ func (qr *QRegister) H(index int) *QRegister {
 
 		if bit == 0 {
 			// |0⟩ -> (|0⟩ + |1⟩)/√2
-			newState[i] += factor * qr.state[i]
-			newState[i] += factor * qr.state[pair]
+			newState[i] = factor * (qr.state[pair] + qr.state[i])
 		} else {
 			// |1⟩ -> (|0⟩ - |1⟩)/√2
-			newState[i] += factor * qr.state[pair]
-			newState[i] -= factor * qr.state[i]
+			newState[i] = factor * (qr.state[pair] - qr.state[i])
 		}
 	}
 
@@ -94,7 +92,7 @@ func (qr *QRegister) H(index int) *QRegister {
 	return qr
 }
 
-// ApplyX applies the Pauli-X gate to the qubit at the specified index.
+// X applies the Pauli-X gate to the qubit at the specified index.
 /*
 Explanation:
 The Pauli-X gate is a single-qubit gate that flips the state of a qubit.
@@ -121,7 +119,7 @@ flipped = 11 ^ 10 = 01 (decimal 1)
 */
 func (qr *QRegister) X(index int) *QRegister {
 	if index >= qr.numQubits {
-		return qr
+		panic("Index out of range")
 	}
 
 	// shift 1 left by index bits
@@ -138,7 +136,7 @@ func (qr *QRegister) X(index int) *QRegister {
 	return qr
 }
 
-// ApplyCNOT applies the CNOT gate to the qubits at the specified control and target indices.
+// CNOT applies the CNOT gate to the qubits at the specified control and target indices.
 
 /*
 Explanation:
@@ -174,7 +172,7 @@ The CNOT gate flips the target qubit if the control qubit is in the |1⟩ state.
 */
 func (qr *QRegister) CNOT(controlIndex, targetIndex int) *QRegister {
 	if controlIndex >= qr.numQubits || targetIndex >= qr.numQubits {
-		return qr
+		panic("Index out of range")
 	}
 
 	controlMask := 1 << controlIndex
