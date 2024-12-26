@@ -64,9 +64,9 @@ For i = 3 (binary 11):
 bit = (11 & 10) >> 1 = 1
 pair = 11 ^ 10 = 01 (decimal 1)
 */
-func (qr *QRegister) H(index int) {
+func (qr *QRegister) H(index int) *QRegister {
 	if index >= qr.numQubits {
-		return
+		return qr
 	}
 
 	factor := complex(1.0/math.Sqrt(2), 0)
@@ -91,6 +91,7 @@ func (qr *QRegister) H(index int) {
 	}
 
 	qr.state = newState
+	return qr
 }
 
 // ApplyX applies the Pauli-X gate to the qubit at the specified index.
@@ -118,9 +119,9 @@ flipped = 10 ^ 10 = 00 (decimal 0)
 For i = 3 (binary 11):
 flipped = 11 ^ 10 = 01 (decimal 1)
 */
-func (qr *QRegister) X(index int) {
+func (qr *QRegister) X(index int) *QRegister {
 	if index >= qr.numQubits {
-		return
+		return qr
 	}
 
 	// shift 1 left by index bits
@@ -134,6 +135,7 @@ func (qr *QRegister) X(index int) {
 	}
 
 	qr.state = newState
+	return qr
 }
 
 // ApplyCNOT applies the CNOT gate to the qubits at the specified control and target indices.
@@ -170,9 +172,9 @@ flipped = 11 ^ 10 = 01 (decimal 1)
 
 The CNOT gate flips the target qubit if the control qubit is in the |1⟩ state.
 */
-func (qr *QRegister) CNOT(controlIndex, targetIndex int) {
+func (qr *QRegister) CNOT(controlIndex, targetIndex int) *QRegister {
 	if controlIndex >= qr.numQubits || targetIndex >= qr.numQubits {
-		return
+		return qr
 	}
 
 	controlMask := 1 << controlIndex
@@ -193,6 +195,7 @@ func (qr *QRegister) CNOT(controlIndex, targetIndex int) {
 	}
 
 	qr.state = newState
+	return qr
 }
 
 // Measure collapses the quantum register into a classical state by measuring each qubit.

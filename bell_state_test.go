@@ -11,8 +11,7 @@ func TestBellState(t *testing.T) {
 	// Test initial superposition
 	t.Run("Initial State", func(t *testing.T) {
 		qr := qregister.New(2)
-		qr.H(0)
-		qr.CNOT(0, 1)
+		qr.H(0).CNOT(0, 1)
 
 		probs := qr.Probabilities()
 		tolerance := 1e-10
@@ -30,8 +29,7 @@ func TestBellState(t *testing.T) {
 
 		for i := 0; i < trials; i++ {
 			qr := qregister.New(2)
-			qr.H(0)
-			qr.CNOT(0, 1)
+			qr.H(0).CNOT(0, 1)
 
 			result := qr.Measure()
 			// Verify both qubits always match (both 0 or both 1)

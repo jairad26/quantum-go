@@ -89,3 +89,19 @@ func TestMeasure(t *testing.T) {
 	}
 	require.Equal(t, 1, numNonZero)
 }
+
+func TestChain(t *testing.T) {
+	qr := qregister.New(2)
+	qr.H(0).CNOT(0, 1)
+
+	probs := qr.Probabilities()
+	tolerance := 1e-10
+
+	require.InDelta(t, 0.5, probs[0], tolerance)
+	require.InDelta(t, 0, probs[1], tolerance)
+	require.InDelta(t, 0, probs[2], tolerance)
+	require.InDelta(t, 0.5, probs[3], tolerance)
+
+	result := qr.Measure()
+	require.Equal(t, result[0], result[1], "Qubits should be perfectly correlated")
+}
